@@ -2,6 +2,7 @@
 #include<stdio.h>
 int yylex();
 int yyerror(char *s);
+int err;
 extern FILE* yyin;
 %}
 %token CLASS KEYWORD PROTECT PRIM STATIC REF
@@ -11,75 +12,77 @@ extern FILE* yyin;
 
 %%
 Program: 
-    |Program ClassDeclaration EOL
+    |Program ClassDeclaration EOL 
 	;
-ClassDeclaration: CLASS ID OPCURBR Declaration CLCURBR
+ClassDeclaration: CLASS ID OPCURBR Declaration CLCURBR 
 	;
 Declaration: 
-	| Declaration FieldDeclaration
+	| Declaration FieldDeclaration 
 	| Declaration MethodDeclaration	 
 	;
-FieldDeclaration: Declarators ID
+FieldDeclaration: Declarators ID 
 	;
-MethodDeclaration: Declarators ID OPENPAR ParameterList CLOSEPAR OPCURBR Statements Return CLCURBR
+MethodDeclaration: Declarators ID OPENPAR ParameterList CLOSEPAR OPCURBR Statements Return CLCURBR 
 				 ;
-Declarators: Protection Staticality Type
+Declarators: Protection Staticality Type 
 		   ;
 Statements: 
-		  | Statements Statement
+		  | Statements Statement 
 		  ;
 Return:
-	  |  RETURNSTMT ID EOL
-	  |  RETURNSTMT NUM EOL
+	  |  RETURNSTMT ID EOL 
+	  |  RETURNSTMT NUM EOL 
 	  ;
 Protection:
-		  | PROTECT
+		  | PROTECT 
 		  ;
 Staticality:
-		   | STATIC
+		   | STATIC 
 		   ;
 Type: Primtype 
-	| Arrtype
+	| Arrtype 
 	;
-Primtype: PRIM
+Primtype: PRIM 
 		;
-Classtype: ID
+Classtype: ID 
 		 ;
-Arrtype: Primtype OPBR CLBR
-	   | Classtype OPBR CLBR
+Arrtype: Primtype OPBR CLBR 
+	   | Classtype OPBR CLBR 
 	   ;
 ParameterList:
-			 | Type ID 
-			 | ParameterList ',' Type ID
+			 | Type ID  
+			 | ParameterList ',' Type ID 
 			 ;
-Reference: REF
-		 | ID
-		 | REF DOT ID
-		 | ID DOT ID
+Reference: REF 
+		 | REF DOT ID 
+		 | ID DOT ID 
 		 ;
-Statement: OPCURBR Statement CLCURBR
-		 | Type ID ASSIGN Expression EOL 
-		 | Reference ASSIGN Expression EOL
-		 | KEYWORD OPENPAR Expression CLOSEPAR Statement
-		 | 'i''f' OPENPAR Expression CLOSEPAR OPCURBR Statement CLCURBR 'e''l''s''e' Statement
+Statement: Type ID ASSIGN Expression EOL 
+		 | Reference ASSIGN Expression EOL 
+		 | KEYWORD OPENPAR Condition CLOSEPAR  OPCURBR Statement CLCURBR  
+		 | Ifstatement
+		 | ID ASSIGN Expression EOL
 		 ;
+Ifstatement:  'i''f' OPENPAR Condition CLOSEPAR OPCURBR Statement CLCURBR 'e''l''s''e'  OPCURBR Statement CLCURBR  
+		   ;	
 Expression:	
-	  	  |  Factor
-		  |  Unary
-		  |  Condition
-		  |  OPENPAR Expression CLOSEPAR
-		  |  'n''e''w' ID
-		  |  PRIM OPBR Condition CLBR 
-		  |  ID OPBR Condition CLBR
+	  	  |  Factor 
+		  |  Unary 
+		  |  Condition 
+		  |  OPENPAR Expression CLOSEPAR 
+		  |  'n''e''w' ID 
+		  |  PRIM OPBR Condition CLBR  
+		  |  ID OPBR Condition CLBR 
   		  ;
 Condition: VAL 
-	 | Expression LOGOP Factor
-         | Expression ARIOP Factor
+		 | Expression LOGOP Factor 
+         | Expression RELOP Factor
+		 | Expression EQUAL Factor 
 	 ;
-Unary: '-' Factor
+Unary: '-' Factor 
      ;
-Factor: NUM
-      | ID
+Factor: NUM 
+      | ID 
       ;	
 %%
 int main(int argc, char **argv)
@@ -91,12 +94,14 @@ int main(int argc, char **argv)
 	return (1);
 	}
  } 
-  printf("> "); 
+
   yyparse();
+  if( err == 0) printf("parse complited successfully; there was no errors.\n");
 }
 
 int yyerror(char *s)
 {
+  err = 1;
   fprintf(stderr, "error: %s\n", s);
 }
 
