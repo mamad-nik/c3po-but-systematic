@@ -10,7 +10,7 @@ there is going to be a file called `flebi`. you can run and compile your files l
 ```
 if the copilation proccess was successfull you'l get a 
 ```
-parse complited successfully; there was no errors.
+parse complited successfully; there were no errors.
 ```
 otherwise it's gonna be a 
 ```
