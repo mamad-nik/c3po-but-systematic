@@ -96,7 +96,7 @@ int main(int argc, char **argv)
  } 
 
   yyparse();
-  if( err == 0) printf("parse complited successfully; there was no errors.\n");
+  if( err == 0) printf("parse complited successfully; there were no errors.\n");
 }
 
 int yyerror(char *s)
